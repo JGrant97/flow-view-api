@@ -1,10 +1,13 @@
 using flow_view.Auth;
+using flow_view.Content;
 using flow_view.Ratings;
 using flow_view_database.ApplicationDbContext;
 using flow_view_database.ApplicationRole;
 using flow_view_database.ApplicationUser;
+using flow_view_database.Content;
 using flow_view_database.Rating;
 using flow_view_database.RefreshToken;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -57,6 +60,9 @@ builder.Services.AddScoped<IAuthApiHelper, AuthApiHelper>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IRatingHelper, RatingHelper>();
 
+builder.Services.AddScoped<IContentRepository, ContentRepository>();
+builder.Services.AddScoped<IContentHelper, ContentHelper>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -79,7 +85,7 @@ app.UseAuthorization();
 app.UseHttpsRedirection();
 
 app.MapAuthEndpoints();
-
 app.MapRatingEndpoints();
+app.MapContentEndpoints();
 
 app.Run();
