@@ -40,10 +40,9 @@ public class RatingHelper : IRatingHelper
         {
             return TypedResults.Ok((await ratingRepository.GetAsync(id)).MapToDTO());
         }
-        catch (Exception)
+        catch (KeyNotFoundException e)
         {
-
-            throw;
+            return TypedResults.NotFound(e.Message);
         }
     }
 
