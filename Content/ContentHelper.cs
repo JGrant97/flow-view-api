@@ -10,8 +10,9 @@ public class ContentHelper : IContentHelper
     public async Task<Ok<ContentDTO>> CreateAsync(ContentDTO content, IContentRepository contentRepository)
     {
         //Upload to cloud and set file path for video and thumbnail
-        content.FilePath = "dsadas";
-        content.Thumbnail = "aaaaa";
+        var entity = content.MapToDBModel();
+        entity.FilePath = "dsadas";
+        entity.Thumbnail = "aaaaa";
 
         return TypedResults.Ok((await contentRepository.CreateAsync(content.MapToDBModel())).MapToDTO());
     }

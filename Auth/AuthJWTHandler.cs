@@ -13,8 +13,13 @@ public static class AuthJWTHandler
 {
     public static async Task<string> GenerateToken(IConfiguration configuration, UserManager<ApplicationUser> userManager, ApplicationUser user)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]));
+        var jwtConfig = GetJWTConfig(configuration);
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        if (user.Email is null)
+            throw new NullReferenceException("No user email");
 
         var claims = new List<Claim>([
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
@@ -29,8 +34,8 @@ public static class AuthJWTHandler
         claims.AddRange(roles.Select(role => new Claim("roles", role)));
 
         var token = new JwtSecurityToken(
-            issuer: configuration["Jwt:Issuer"],
-            audience: configuration["Jwt:Audience"],
+            issuer: jwtConfig.Issuser,
+            audience: jwtConfig.Audiance,
             claims: claims,
             expires: DateTime.Now.AddMinutes(1),
             signingCredentials: creds);
@@ -68,11 +73,18 @@ public static class AuthJWTHandler
 
     public static void AddJWTAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
+        var jwtConfig = GetJWTConfig(configuration);
+
+        var test = jwtConfig.Key;
+        var test2 = jwtConfig.Issuser;
+        var test3 = jwtConfig.Audiance;
+
+
         var tokenValidationParameters = new TokenValidationParameters()
         {
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"])),
-            ValidIssuer = configuration["Jwt:Issuer"],
-            ValidAudience = configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key)),
+            ValidIssuer = jwtConfig.Issuser,
+            ValidAudience = jwtConfig.Audiance,
             ValidateIssuerSigningKey = true,
             ValidateIssuer = true,
             ValidateAudience = true,
@@ -91,5 +103,17 @@ public static class AuthJWTHandler
         });
 
         services.AddSingleton(tokenValidationParameters);
+    }
+
+    private static AuthJWTConfig GetJWTConfig(IConfiguration configuration)
+    {
+        var jwtKey = configuration["Jwt:Key"];
+        var jwtIssuser = configuration["Jwt:Issuer"];
+        var jwtAudience = configuration["Jwt:Audience"];
+
+        if (jwtKey is null || jwtIssuser is null || jwtAudience is null)
+            throw new NullReferenceException();
+
+        return new AuthJWTConfig(jwtKey, jwtIssuser, jwtAudience);
     }
 }

@@ -3,6 +3,7 @@ using flow_view_database.Rating;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace flow_view.Ratings;
 
@@ -39,6 +40,27 @@ public class RatingHelper : IRatingHelper
         try
         {
             return TypedResults.Ok((await ratingRepository.GetAsync(id)).MapToDTO());
+        }
+        catch (KeyNotFoundException e)
+        {
+            return TypedResults.NotFound(e.Message);
+        }
+    }
+
+    public async Task<Results<Ok<RatingStatsDTO>, NotFound<string>>> GetStats(Guid contentId, IRatingRepository ratingRepository, ClaimsPrincipal userClaim)
+    {
+        var userId = userClaim.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        try
+        {
+            var likes = ratingRepository.GetLikes(contentId);
+            var dislikes = ratingRepository.GetLikes(contentId);
+            Rating? rating = null;
+
+            if (userId is not null)
+                rating = await ratingRepository.GetByContentIdAndUserIdAsync(contentId, new Guid(userId));
+
+            return TypedResults.Ok(new RatingStatsDTO(likes, dislikes, rating is not null ? rating.MapToDTO() : null));
         }
         catch (KeyNotFoundException e)
         {

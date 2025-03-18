@@ -1,5 +1,6 @@
 ﻿using flow_view_database.Rating;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Security.Claims;
 
 namespace flow_view.Ratings;
 
@@ -10,4 +11,5 @@ public interface IRatingHelper
     Task<Ok<RatingDTO>> CreateAsync(RatingDTO rating, IRatingRepository ratingRepository);
     Task<Ok<RatingDTO>> UpdateAsync(RatingDTO rating, IRatingRepository ratingRepository);
     Task<Results<Ok, NotFound<string>>> DeleteAsync(Guid id, IRatingRepository ratingRepository);
+    Task<Results<Ok<RatingStatsDTO>, NotFound<string>>> GetStats(Guid contentId, IRatingRepository ratingRepository, ClaimsPrincipal userClaim);
 }

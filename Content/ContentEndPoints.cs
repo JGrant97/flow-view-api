@@ -19,14 +19,17 @@ public static class ContentEndPoints
 
         app.MapDelete("/ratcontenting/delete/{id}", async (Guid id, IContentHelper contentHelper, IContentRepository contentRepository) =>
             await contentHelper.DeleteAsync(id, contentRepository)
-        ).WithTags("Content");
+        ).WithTags("Content")
+        .RequireAuthorization();
 
         app.MapPost("/content/create", async ([FromForm] ContentDTO content, IContentHelper contentHelper, IContentRepository contentRepository) =>
             await contentHelper.CreateAsync(content, contentRepository)
-        ).WithTags("Content");
+        ).WithTags("Content")
+        .RequireAuthorization();
 
         app.MapPut("/content/update", async ([FromForm] ContentDTO content, IContentHelper contentHelper, IContentRepository contentRepository) =>
             await contentHelper.UpdateAsync(content, contentRepository)
-        ).WithTags("Content");
+        ).WithTags("Content")
+        .RequireAuthorization();
     }
 }

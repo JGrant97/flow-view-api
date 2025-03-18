@@ -77,11 +77,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(flowViewWeb);
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.UseHttpsRedirection();
 
 app.MapAuthEndpoints();
