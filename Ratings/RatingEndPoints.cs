@@ -18,20 +18,19 @@ public static class RatingEndPoints
 
         app.MapGet("/rating/stats/{id}", async (Guid id, IRatingHelper ratinghelper, IRatingRepository ratingRepository, ClaimsPrincipal userClaim) =>
             await ratinghelper.GetStats(id, ratingRepository, userClaim)
-        ).WithTags("Rating")
-        .RequireAuthorization();
+        ).WithTags("Rating");
 
-        app.MapDelete("/rating/delete/{id}", async (Guid id, IRatingHelper ratinghelper, IRatingRepository ratingRepository) =>
+        app.MapDelete("/rating/{id}", async (Guid id, IRatingHelper ratinghelper, IRatingRepository ratingRepository) =>
             await ratinghelper.DeleteAsync(id, ratingRepository)
         ).WithTags("Rating")
         .RequireAuthorization();
 
-        app.MapPost("/rating/create", async ([FromForm] RatingDTO rating, IRatingHelper ratinghelper, IRatingRepository ratingRepository) =>
+        app.MapPost("/rating", async ([FromBody] CreateRatingDTO rating, IRatingHelper ratinghelper, IRatingRepository ratingRepository) =>
             await ratinghelper.CreateAsync(rating, ratingRepository)
         ).WithTags("Rating")
         .RequireAuthorization();
 
-        app.MapPut("/rating/update", async ([FromForm] RatingDTO rating, IRatingHelper ratinghelper, IRatingRepository ratingRepository) =>
+        app.MapPut("/rating", async ([FromBody] RatingDTO rating, IRatingHelper ratinghelper, IRatingRepository ratingRepository) =>
             await ratinghelper.UpdateAsync(rating, ratingRepository)
         ).WithTags("Rating")
         .RequireAuthorization();

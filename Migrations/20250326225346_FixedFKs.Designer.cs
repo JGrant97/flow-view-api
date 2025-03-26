@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using flow_view_database.ApplicationDbContext;
 
@@ -11,9 +12,11 @@ using flow_view_database.ApplicationDbContext;
 namespace flow_view.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250326225346_FixedFKs")]
+    partial class FixedFKs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -360,7 +363,7 @@ namespace flow_view.Migrations
                     b.HasOne("flow_view_database.Content.Content", "Content")
                         .WithMany()
                         .HasForeignKey("ContentId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("flow_view_database.ApplicationUser.ApplicationUser", "User")

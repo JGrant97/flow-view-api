@@ -9,7 +9,7 @@ namespace flow_view.Ratings;
 
 public class RatingHelper : IRatingHelper
 {
-    public async Task<Ok<RatingDTO>> CreateAsync(RatingDTO rating, IRatingRepository ratingRepository) =>
+    public async Task<Ok<RatingDTO>> CreateAsync(CreateRatingDTO rating, IRatingRepository ratingRepository) =>
          TypedResults.Ok((await ratingRepository.CreateAsync(rating.MapToDBModel())).MapToDTO());
 
     public async Task<Results<Ok, NotFound<string>>> DeleteAsync(Guid id, IRatingRepository ratingRepository)
@@ -54,7 +54,7 @@ public class RatingHelper : IRatingHelper
         try
         {
             var likes = ratingRepository.GetLikes(contentId);
-            var dislikes = ratingRepository.GetLikes(contentId);
+            var dislikes = ratingRepository.GetDislikes(contentId);
             Rating? rating = null;
 
             if (userId is not null)

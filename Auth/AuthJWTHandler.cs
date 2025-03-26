@@ -26,7 +26,7 @@ public static class AuthJWTHandler
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.EmailVerified, user.EmailConfirmed.ToString()),
-            new Claim("UserName", user.DisplayName),
+            new Claim("userName", user.DisplayName),
         ]);
 
         var roles = await userManager.GetRolesAsync(user);

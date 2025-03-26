@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using flow_view_database.ApplicationDbContext;
 
@@ -11,9 +12,11 @@ using flow_view_database.ApplicationDbContext;
 namespace flow_view.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250325222627_AddUniqueRatingForUserRatingAndContent")]
+    partial class AddUniqueRatingForUserRatingAndContent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -255,12 +258,7 @@ namespace flow_view.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Content");
                 });
@@ -269,6 +267,9 @@ namespace flow_view.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AspNetUserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("ContentId")
@@ -280,14 +281,9 @@ namespace flow_view.Migrations
                     b.Property<bool>("Like")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ContentId");
-
-                    b.HasIndex("UserId", "ContentId")
+                    b.HasIndex("AspNetUserId", "ContentId")
                         .IsUnique();
 
                     b.ToTable("Rating");
@@ -342,36 +338,6 @@ namespace flow_view.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("flow_view_database.Content.Content", b =>
-                {
-                    b.HasOne("flow_view_database.ApplicationUser.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("flow_view_database.Rating.Rating", b =>
-                {
-                    b.HasOne("flow_view_database.Content.Content", "Content")
-                        .WithMany()
-                        .HasForeignKey("ContentId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("flow_view_database.ApplicationUser.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Content");
-
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

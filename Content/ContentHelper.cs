@@ -1,7 +1,9 @@
 ﻿using flow_view_database.Content;
 using flow_view_database.Rating;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using System.Text;
 
 namespace flow_view.Content;
 
@@ -14,7 +16,7 @@ public class ContentHelper : IContentHelper
         entity.FilePath = "dsadas";
         entity.Thumbnail = "aaaaa";
 
-        return TypedResults.Ok((await contentRepository.CreateAsync(content.MapToDBModel())).MapToDTO());
+        return TypedResults.Ok((await contentRepository.CreateAsync(entity)).MapToDTO());
     }
 
     public async Task<Results<Ok, NotFound<string>>> DeleteAsync(Guid id, IContentRepository contentRepository)
@@ -45,6 +47,10 @@ public class ContentHelper : IContentHelper
         try
         {
             var result = await contentRepository.GetAsync(id);
+
+            if(result is null)
+                return TypedResults.NotFound("No content found.");
+
             return TypedResults.Ok(result.MapToDTO());
         }
         catch (KeyNotFoundException e)
