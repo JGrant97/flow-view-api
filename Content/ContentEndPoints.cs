@@ -7,29 +7,35 @@ namespace flow_view.Content;
 
 public static class ContentEndPoints
 {
-    public static void MapContentEndpoints(this WebApplication app)
+    public static void MapContentEndpoints(this WebApplication builder)
     {
-        app.MapGet("/content", async (IContentHelper contentHelper, IContentRepository contentRepository) =>
-            await contentHelper.GetAsync(contentRepository)
-        ).WithTags("Content");
+        var api = builder.MapGroup("/content").WithTags("Content");
 
-        app.MapGet("/content/{id}", async (Guid id, IContentHelper contentHelper, IContentRepository contentRepository) =>
-            await contentHelper.GetAsync(id, contentRepository)
-        ).WithTags("Content");
+        api.MapGet("/", async (IContentApiHandler handler, CancellationToken cancellationToken) =>
+            await handler.GetAsync(cancellationToken)
+        );
 
-        app.MapDelete("/content/{id}", async (Guid id, IContentHelper contentHelper, IContentRepository contentRepository) =>
-            await contentHelper.DeleteAsync(id, contentRepository)
-        ).WithTags("Content")
+        api.MapGet("/{id}", async (Guid id, IContentApiHandler handler, CancellationToken cancellationToken) =>
+            await handler.GetAsync(id, cancellationToken)
+        );
+
+        api.MapDelete("/{id}", async (Guid id, IContentApiHandler handler, CancellationToken cancellationToken) =>
+            await handler.DeleteAsync(id, cancellationToken)
+        )
         .RequireAuthorization();
 
-        app.MapPost("/content/", async ([FromForm] ContentDTO content, IContentHelper contentHelper, IContentRepository contentRepository) =>
-            await contentHelper.CreateAsync(content, contentRepository)
-        ).WithTags("Content")
+        api.MapPost("/", async ([FromForm] ContentDTO content, IContentApiHandler handler, CancellationToken cancellationToken) =>
+            await handler.CreateAsync(content, cancellationToken)
+        )
         .RequireAuthorization();
 
-        app.MapPut("/content/", async ([FromForm] ContentDTO content, IContentHelper contentHelper, IContentRepository contentRepository) =>
-            await contentHelper.UpdateAsync(content, contentRepository)
-        ).WithTags("Content")
+        api.MapPut("/", async ([FromForm] ContentDTO content, IContentApiHandler handler, CancellationToken cancellationToken) =>
+            await handler.UpdateAsync(content, cancellationToken)
+        )
         .RequireAuthorization();
+
+        api.MapPost("/filter", async (ContentFilterRequest request, IContentApiHandler handler, IRatingRepository ratingRepository, CancellationToken cancellationToken) =>
+            await handler.FilterAsync(request, cancellationToken)
+        );
     }
 }

@@ -58,10 +58,10 @@ builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IAuthApiHelper, AuthApiHelper>();
 
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
-builder.Services.AddScoped<IRatingHelper, RatingHelper>();
+builder.Services.AddScoped<IRatingApiHandler, RatingApiHandler>();
 
 builder.Services.AddScoped<IContentRepository, ContentRepository>();
-builder.Services.AddScoped<IContentHelper, ContentHelper>();
+builder.Services.AddScoped<IContentApiHandler, ContentApiHandler>();
 
 var app = builder.Build();
 

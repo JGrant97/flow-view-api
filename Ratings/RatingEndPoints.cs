@@ -1,38 +1,38 @@
 ﻿using flow_view_database.Rating;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Threading;
 
 namespace flow_view.Ratings;
 
 public static class RatingEndPoints
 {
-    public static void MapRatingEndpoints(this WebApplication app)
+    public static void MapRatingEndpoints(this WebApplication builder)
     {
-        app.MapGet("/rating", async (IRatingHelper ratinghelper, IRatingRepository ratingRepository) =>
-            await ratinghelper.GetAsync(ratingRepository)
-        ).WithTags("Rating");
+        var api = builder.MapGroup("/rating").WithTags("Rating");
 
-        app.MapGet("/rating/{id}", async (Guid id, IRatingHelper ratinghelper, IRatingRepository ratingRepository) =>
-            await ratinghelper.GetAsync(id, ratingRepository)
-        ).WithTags("Rating");
+        api.MapGet("/", async (IRatingApiHandler handler, CancellationToken cancellationToken) =>
+            await handler.GetAsync(cancellationToken)
+        );
 
-        app.MapGet("/rating/stats/{id}", async (Guid id, IRatingHelper ratinghelper, IRatingRepository ratingRepository, ClaimsPrincipal userClaim) =>
-            await ratinghelper.GetStats(id, ratingRepository, userClaim)
-        ).WithTags("Rating");
+        api.MapGet("/{id}", async (Guid id, IRatingApiHandler handler, CancellationToken cancellationToken) =>
+            await handler.GetAsync(id, cancellationToken)
+        );
 
-        app.MapDelete("/rating/{id}", async (Guid id, IRatingHelper ratinghelper, IRatingRepository ratingRepository) =>
-            await ratinghelper.DeleteAsync(id, ratingRepository)
-        ).WithTags("Rating")
-        .RequireAuthorization();
+        api.MapGet("/stats/{id}", async (Guid id, IRatingApiHandler handler, ClaimsPrincipal userClaim, CancellationToken cancellationToken) =>
+            await handler.GetStats(id, userClaim, cancellationToken)
+        );
 
-        app.MapPost("/rating", async ([FromBody] CreateRatingDTO rating, IRatingHelper ratinghelper, IRatingRepository ratingRepository) =>
-            await ratinghelper.CreateAsync(rating, ratingRepository)
-        ).WithTags("Rating")
-        .RequireAuthorization();
+        api.MapDelete("/{id}", async (Guid id, IRatingApiHandler handler, CancellationToken cancellationToken) =>
+            await handler.DeleteAsync(id, cancellationToken)
+        ).RequireAuthorization();
 
-        app.MapPut("/rating", async ([FromBody] RatingDTO rating, IRatingHelper ratinghelper, IRatingRepository ratingRepository) =>
-            await ratinghelper.UpdateAsync(rating, ratingRepository)
-        ).WithTags("Rating")
-        .RequireAuthorization();
+        api.MapPost("/", async ([FromBody] CreateRatingDTO rating, IRatingApiHandler handler, CancellationToken cancellationToken) =>
+            await handler.CreateAsync(rating, cancellationToken)
+        ).RequireAuthorization();
+
+        api.MapPut("/", async ([FromBody] RatingDTO rating, IRatingApiHandler handler, CancellationToken cancellationToken) =>
+            await handler.UpdateAsync(rating, cancellationToken)
+        ).RequireAuthorization();
     }
 }

@@ -262,7 +262,7 @@ namespace flow_view.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Content");
+                    b.ToTable("Content", (string)null);
                 });
 
             modelBuilder.Entity("flow_view_database.Rating.Rating", b =>
@@ -290,7 +290,7 @@ namespace flow_view.Migrations
                     b.HasIndex("UserId", "ContentId")
                         .IsUnique();
 
-                    b.ToTable("Rating");
+                    b.ToTable("Rating", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
